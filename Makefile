@@ -12,6 +12,9 @@ compile-linux: ## Compile for linux 64bit
 compile-darwin: ## Compile for darwin 64bit
 	GOOS=darwin GOARCH=amd64 $(GO) build -o $(ARTIFACTS)/$(TARGET)-darwin $(LDFLAGS) $(SRC)
 
+compile-freebsd: ## Compile for freebsd 64bit
+	GOOS=freebsd GOARCH=amd64 $(GO) build -o $(ARTIFACTS)/$(TARGET)-darwin $(LDFLAGS) $(SRC)
+
 compile-windows: ## Compile for windows 64bit
 	GOOS=windows GOARCH=amd64 $(GO) build -o $(ARTIFACTS)/$(TARGET)-windows.exe $(LDFLAGS) $(SRC)
 
