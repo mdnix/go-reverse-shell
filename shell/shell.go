@@ -13,6 +13,7 @@ import (
 
 const (
 	bash    = "/bin/bash"
+	tcsh    = "/bin/tcsh"
 	sh      = "/bin/sh"
 	cmd     = "C:\\Windows\\System32\\cmd.exe"
 	powersh = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
@@ -111,6 +112,11 @@ func GetShell() string {
 	case "linux":
 		if exists(bash) {
 			return bash
+		}
+		return sh
+	case "freebsd":
+		if exists(tcsh) {
+			return tcsh
 		}
 		return sh
 	case "darwin":
